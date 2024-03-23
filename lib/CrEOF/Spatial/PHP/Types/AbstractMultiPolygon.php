@@ -34,13 +34,13 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
     /**
      * @var array[] $polygons
      */
-    protected $polygons = array();
+    protected array $polygons = array();
 
     /**
      * @param AbstractPolygon[]|array[] $polygons
-     * @param null|int                     $srid
+     * @param int|null $srid
      */
-    public function __construct(array $polygons, $srid = null)
+    public function __construct(array $polygons, ?int $srid = null)
     {
         $this->setPolygons($polygons)
             ->setSrid($srid);
@@ -51,7 +51,7 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
      *
      * @return self
      */
-    public function addPolygon($polygon)
+    public function addPolygon(AbstractPolygon|array $polygon): static
     {
         $this->polygons[] = $this->validatePolygonValue($polygon);
 
@@ -61,11 +61,11 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
     /**
      * @return AbstractPolygon[]
      */
-    public function getPolygons()
+    public function getPolygons(): array
     {
         $polygons = array();
 
-        for ($i = 0; $i < count($this->polygons); $i++) {
+        for ($i = 0, $iMax = count($this->polygons); $i < $iMax; $i++) {
             $polygons[] = $this->getPolygon($i);
         }
 
@@ -77,9 +77,9 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
      *
      * @return AbstractPolygon
      */
-    public function getPolygon($index)
+    public function getPolygon(int $index): AbstractPolygon
     {
-        if (-1 == $index) {
+        if (-1 === $index) {
             $index = count($this->polygons) - 1;
         }
 
@@ -93,7 +93,7 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
      *
      * @return self
      */
-    public function setPolygons(array $polygons)
+    public function setPolygons(array $polygons): static
     {
         $this->polygons = $this->validateMultiPolygonValue($polygons);
 
@@ -103,7 +103,7 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return self::MULTIPOLYGON;
     }
@@ -111,7 +111,7 @@ abstract class AbstractMultiPolygon extends AbstractGeometry
     /**
      * @return array[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->polygons;
     }

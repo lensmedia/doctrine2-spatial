@@ -37,12 +37,12 @@ abstract class AbstractGeometry implements GeometryInterface
     /**
      * @var int
      */
-    protected $srid;
+    protected int $srid;
 
     /**
      * @return array
      */
-    abstract public function toArray();
+    abstract public function toArray(): array;
 
     /**
      * @return string
@@ -62,13 +62,13 @@ abstract class AbstractGeometry implements GeometryInterface
     {
         $json['type'] = $this->getType();
         $json['coordinates'] = $this->toArray();
-        return json_encode($json);
+        return json_encode($json, JSON_THROW_ON_ERROR);
     }
 
     /**
      * @return null|int
      */
-    public function getSrid()
+    public function getSrid(): ?int
     {
         return $this->srid;
     }
@@ -78,7 +78,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return self
      */
-    public function setSrid($srid)
+    public function setSrid(mixed $srid): static
     {
         if ($srid !== null) {
             $this->srid = (int) $srid;
@@ -88,23 +88,18 @@ abstract class AbstractGeometry implements GeometryInterface
     }
 
     /**
-     * @param AbstractPoint|array $point
+     * @param array|AbstractPoint $point
      *
      * @return array
      * @throws InvalidValueException
      */
-    protected function validatePointValue($point)
+    protected function validatePointValue(AbstractPoint|array $point): array
     {
-        switch (true) {
-            case ($point instanceof AbstractPoint):
-                return $point->toArray();
-                break;
-            case (is_array($point) && count($point) == 2 && is_numeric($point[0]) && is_numeric($point[1])):
-                return array_values($point);
-                break;
-            default:
-                throw new InvalidValueException(sprintf('Invalid %s Point value of type "%s"', $this->getType(), (is_object($point) ? get_class($point) : gettype($point))));
-        }
+        return match (true) {
+            $point instanceof AbstractPoint => $point->toArray(),
+            count($point) === 2 && is_numeric($point[0]) && is_numeric($point[1]) => array_values($point),
+            default => throw new InvalidValueException(sprintf('Invalid %s Point value of type "%s"', $this->getType(), (is_object($point) ? get_class($point) : gettype($point)))),
+        };
     }
 
     /**
@@ -113,7 +108,7 @@ abstract class AbstractGeometry implements GeometryInterface
      * @return array[]
      * @throws InvalidValueException
      */
-    protected function validateRingValue($ring)
+    protected function validateRingValue(AbstractLineString|array $ring): array|AbstractLineString
     {
         switch (true) {
             case ($ring instanceof AbstractLineString):
@@ -139,7 +134,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return array[]
      */
-    protected function validateMultiPointValue($points)
+    protected function validateMultiPointValue(array|AbstractLineString $points): array|AbstractLineString
     {
         if ($points instanceof GeometryInterface) {
             $points = $points->toArray();
@@ -157,7 +152,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return array[]
      */
-    protected function validateLineStringValue($lineString)
+    protected function validateLineStringValue(array|AbstractLineString $lineString): AbstractLineString|array
     {
         return $this->validateMultiPointValue($lineString);
     }
@@ -166,8 +161,9 @@ abstract class AbstractGeometry implements GeometryInterface
      * @param AbstractLineString[] $rings
      *
      * @return array
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    protected function validatePolygonValue(array $rings)
+    protected function validatePolygonValue(array $rings): array
     {
         foreach ($rings as &$ring) {
             $ring = $this->validateRingValue($ring);
@@ -180,8 +176,9 @@ abstract class AbstractGeometry implements GeometryInterface
      * @param AbstractPolygon[] $polygons
      *
      * @return array
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    protected function validateMultiPolygonValue(array $polygons)
+    protected function validateMultiPolygonValue(array $polygons): array
     {
         foreach ($polygons as &$polygon) {
             if ($polygon instanceof GeometryInterface) {
@@ -198,7 +195,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return array
      */
-    protected function validateMultiLineStringValue(array $lineStrings)
+    protected function validateMultiLineStringValue(array $lineStrings): array
     {
         foreach ($lineStrings as &$lineString) {
             $lineString = $this->validateLineStringValue($lineString);
@@ -210,7 +207,7 @@ abstract class AbstractGeometry implements GeometryInterface
     /**
      * @return string
      */
-    protected function getNamespace()
+    protected function getNamespace(): string
     {
         $class = get_class($this);
 
@@ -222,7 +219,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringPoint(array $point)
+    private function toStringPoint(array $point): string
     {
         return vsprintf('%s %s', $point);
     }
@@ -232,7 +229,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringMultiPoint(array $multiPoint)
+    private function toStringMultiPoint(array $multiPoint): string
     {
         $strings = array();
 
@@ -248,7 +245,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringLineString(array $lineString)
+    private function toStringLineString(array $lineString): string
     {
         return $this->toStringMultiPoint($lineString);
     }
@@ -258,7 +255,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringMultiLineString(array $multiLineString)
+    private function toStringMultiLineString(array $multiLineString): string
     {
         $strings = null;
 
@@ -274,7 +271,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringPolygon(array $polygon)
+    private function toStringPolygon(array $polygon): string
     {
         return $this->toStringMultiLineString($polygon);
     }
@@ -284,7 +281,7 @@ abstract class AbstractGeometry implements GeometryInterface
      *
      * @return string
      */
-    private function toStringMultiPolygon(array $multiPolygon)
+    private function toStringMultiPolygon(array $multiPolygon): string
     {
         $strings = null;
 

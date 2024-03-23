@@ -36,19 +36,19 @@ interface PlatformInterface
 {
     /**
      * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
+     * @param string $sqlExpr
      *
      * @return GeometryInterface
      */
-    public function convertBinaryToPHPValue(AbstractSpatialType $type, $sqlExpr);
+    public function convertBinaryToPHPValue(AbstractSpatialType $type, string $sqlExpr): GeometryInterface;
 
     /**
      * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
+     * @param string $sqlExpr
      *
      * @return GeometryInterface
      */
-    public function convertStringToPHPValue(AbstractSpatialType $type, $sqlExpr);
+    public function convertStringToPHPValue(AbstractSpatialType $type, string $sqlExpr): GeometryInterface;
 
     /**
      * @param AbstractSpatialType $type
@@ -56,7 +56,7 @@ interface PlatformInterface
      *
      * @return string
      */
-    public function convertToDatabaseValue(AbstractSpatialType $type, GeometryInterface $value);
+    public function convertToDatabaseValue(AbstractSpatialType $type, GeometryInterface $value): string;
 
     /**
      * @param AbstractSpatialType $type
@@ -64,7 +64,7 @@ interface PlatformInterface
      *
      * @return string
      */
-    public function convertToDatabaseValueSQL(AbstractSpatialType $type, $sqlExpr);
+    public function convertToDatabaseValueSQL(AbstractSpatialType $type, $sqlExpr): string;
 
     /**
      * @param AbstractSpatialType $type
@@ -72,7 +72,7 @@ interface PlatformInterface
      *
      * @return string
      */
-    public function convertToPHPValueSQL(AbstractSpatialType $type, $sqlExpr);
+    public function convertToPHPValueSQL(AbstractSpatialType $type, $sqlExpr): string;
 
     /**
      * Gets the SQL declaration snippet for a field of this type.
@@ -81,12 +81,12 @@ interface PlatformInterface
      *
      * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration);
+    public function getSQLDeclaration(array $fieldDeclaration): string;
 
     /**
      * @param AbstractSpatialType $type
      *
      * @return string[]
      */
-    public function getMappedDatabaseTypes(AbstractSpatialType $type);
+    public function getMappedDatabaseTypes(AbstractSpatialType $type): array;
 }

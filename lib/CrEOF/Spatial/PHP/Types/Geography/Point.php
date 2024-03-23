@@ -43,15 +43,13 @@ class Point extends AbstractPoint implements GeographyInterface
      * @return self
      * @throws InvalidValueException
      */
-    public function setX($x)
+    public function setX(mixed $x): static
     {
         $parser = new Parser($x);
 
         try {
             $x = (float) $parser->parse();
-        } catch (RangeException $e) {
-            throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
-        } catch (UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
@@ -70,15 +68,13 @@ class Point extends AbstractPoint implements GeographyInterface
      * @return self
      * @throws InvalidValueException
      */
-    public function setY($y)
+    public function setY(mixed $y): static
     {
         $parser = new Parser($y);
 
         try {
             $y = (float) $parser->parse();
-        } catch (RangeException $e) {
-            throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
-        } catch (UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 

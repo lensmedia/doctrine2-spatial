@@ -27,9 +27,9 @@ use CrEOF\Spatial\Exception\UnsupportedPlatformException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 /**
  * Abstract spatial DQL function
@@ -67,22 +67,22 @@ abstract class AbstractSpatialDQLFunction extends FunctionNode
     /**
      * @param Parser $parser
      */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $lexer = $parser->getLexer();
 
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->geomExpr[] = $parser->ArithmeticPrimary();
 
-        while (count($this->geomExpr) < $this->minGeomExpr || (($this->maxGeomExpr === null || count($this->geomExpr) < $this->maxGeomExpr) && $lexer->lookahead['type'] != Lexer::T_CLOSE_PARENTHESIS)) {
-            $parser->match(Lexer::T_COMMA);
+        while (count($this->geomExpr) < $this->minGeomExpr || (($this->maxGeomExpr === null || count($this->geomExpr) < $this->maxGeomExpr) && $lexer->lookahead['type'] != TokenType::T_CLOSE_PARENTHESIS)) {
+            $parser->match(TokenType::T_COMMA);
 
             $this->geomExpr[] = $parser->ArithmeticPrimary();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
     /**
@@ -90,7 +90,7 @@ abstract class AbstractSpatialDQLFunction extends FunctionNode
      *
      * @return string
      */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $this->validatePlatform($sqlWalker->getConnection()->getDatabasePlatform());
 
@@ -102,19 +102,7 @@ abstract class AbstractSpatialDQLFunction extends FunctionNode
         return sprintf('%s(%s)', $this->functionName, implode(', ', $arguments));
     }
 
-    /**
-     * @param AbstractPlatform $platform
-     *
-     * @throws UnsupportedPlatformException
-     */
-    protected function validatePlatform(AbstractPlatform $platform)
+    protected function validatePlatform(AbstractPlatform $platform): void
     {
-        $platformName = $platform->getName();
-
-        if (isset($this->platforms) && !in_array($platformName, $this->platforms)) {
-            throw new UnsupportedPlatformException(
-                sprintf('DBAL platform "%s" is not currently supported.', $platformName)
-            );
-        }
     }
 }

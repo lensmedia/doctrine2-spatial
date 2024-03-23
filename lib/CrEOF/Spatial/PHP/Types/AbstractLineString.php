@@ -34,7 +34,7 @@ abstract class AbstractLineString extends AbstractMultiPoint
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return self::LINESTRING;
     }
@@ -42,7 +42,7 @@ abstract class AbstractLineString extends AbstractMultiPoint
     /**
      * @return bool
      */
-    public function isClosed()
+    public function isClosed(): bool
     {
         return $this->points[0] === $this->points[count($this->points) - 1];
     }

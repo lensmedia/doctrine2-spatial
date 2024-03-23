@@ -38,51 +38,26 @@ use CrEOF\Spatial\PHP\Types\Geometry\GeometryInterface;
  */
 abstract class AbstractPlatform implements PlatformInterface
 {
-    /**
-     * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
-     *
-     * @return GeometryInterface
-     */
-    public function convertStringToPHPValue(AbstractSpatialType $type, $sqlExpr)
+    public function convertStringToPHPValue(AbstractSpatialType $type, string $sqlExpr): GeometryInterface
     {
         $parser = new StringParser($sqlExpr);
 
         return $this->newObjectFromValue($type, $parser->parse());
     }
 
-    /**
-     * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
-     *
-     * @return GeometryInterface
-     */
-    public function convertBinaryToPHPValue(AbstractSpatialType $type, $sqlExpr)
+    public function convertBinaryToPHPValue(AbstractSpatialType $type, string $sqlExpr): GeometryInterface
     {
         $parser = new BinaryParser($sqlExpr);
 
         return $this->newObjectFromValue($type, $parser->parse());
     }
 
-    /**
-     * @param AbstractSpatialType $type
-     * @param GeometryInterface   $value
-     *
-     * @return string
-     */
-    public function convertToDatabaseValue(AbstractSpatialType $type, GeometryInterface $value)
+    public function convertToDatabaseValue(AbstractSpatialType $type, GeometryInterface $value): string
     {
         return sprintf('%s(%s)', strtoupper($value->getType()), $value);
     }
 
-    /**
-     * Get an array of database types that map to this Doctrine type.
-     *
-     * @param AbstractSpatialType $type
-     *
-     * @return string[]
-     */
-    public function getMappedDatabaseTypes(AbstractSpatialType $type)
+    public function getMappedDatabaseTypes(AbstractSpatialType $type): array
     {
         $sqlType = strtolower($type->getSQLType());
 
@@ -94,15 +69,9 @@ abstract class AbstractPlatform implements PlatformInterface
     }
 
     /**
-     * Create spatial object from parsed value
-     *
-     * @param AbstractSpatialType $type
-     * @param array               $value
-     *
-     * @return GeometryInterface
      * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    private function newObjectFromValue(AbstractSpatialType $type, $value)
+    private function newObjectFromValue(AbstractSpatialType $type, array $value): GeometryInterface
     {
         $typeFamily = $type->getTypeFamily();
         $typeName   = strtoupper($value['type']);

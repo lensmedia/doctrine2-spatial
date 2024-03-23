@@ -31,22 +31,22 @@ namespace CrEOF\Spatial\PHP\Types\Geography;
  */
 interface GeographyInterface
 {
-    const GEOGRAPHY = 'Geography';
+    public const GEOGRAPHY = 'Geography';
 
     /**
      * @return int
      */
-    public function getSrid();
+    public function getSrid(): int;
 
     /**
      * @param int $srid
      *
      * @return self
      */
-    public function setSrid($srid);
+    public function setSrid(int $srid): GeographyInterface;
 
     /**
      * @return string
      */
-    public function getType();
+    public function getType(): string;
 }

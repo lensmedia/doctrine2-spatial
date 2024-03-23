@@ -36,12 +36,8 @@ class MySql extends AbstractPlatform
 {
     /**
      * Gets the SQL declaration snippet for a field of this type.
-     *
-     * @param array $fieldDeclaration
-     *
-     * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration)
+    public function getSQLDeclaration(array $fieldDeclaration): string
     {
         if ($fieldDeclaration['type']->getSQLType() === GeographyInterface::GEOGRAPHY) {
             return 'GEOMETRY';
@@ -50,24 +46,12 @@ class MySql extends AbstractPlatform
         return strtoupper($fieldDeclaration['type']->getSQLType());
     }
 
-    /**
-     * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
-     *
-     * @return string
-     */
-    public function convertToPHPValueSQL(AbstractSpatialType $type, $sqlExpr)
+    public function convertToPHPValueSQL(AbstractSpatialType $type, string $sqlExpr): string
     {
         return sprintf('AsBinary(%s)', $sqlExpr);
     }
 
-    /**
-     * @param AbstractSpatialType $type
-     * @param string              $sqlExpr
-     *
-     * @return string
-     */
-    public function convertToDatabaseValueSQL(AbstractSpatialType $type, $sqlExpr)
+    public function convertToDatabaseValueSQL(AbstractSpatialType $type, string $sqlExpr): string
     {
         return sprintf('GeomFromText(%s)', $sqlExpr);
     }

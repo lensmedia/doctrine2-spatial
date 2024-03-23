@@ -39,16 +39,13 @@ use CrEOF\Spatial\Exception\InvalidValueException;
  */
 abstract class AbstractPoint extends AbstractGeometry
 {
-    /**
-     * @var float $x
-     */
-    protected $x;
+    protected float $x;
+
+    protected float $y;
 
     /**
-     * @var float $y
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    protected $y;
-
     public function __construct()
     {
         $argv = $this->validateArguments(func_get_args());
@@ -62,15 +59,13 @@ abstract class AbstractPoint extends AbstractGeometry
      * @return self
      * @throws InvalidValueException
      */
-    public function setX($x)
+    public function setX(mixed $x): static
     {
         $parser = new Parser($x);
 
         try {
             $this->x = (float) $parser->parse();
-        } catch (RangeException $e) {
-            throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
-        } catch (UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
@@ -80,7 +75,7 @@ abstract class AbstractPoint extends AbstractGeometry
     /**
      * @return float
      */
-    public function getX()
+    public function getX(): float
     {
         return $this->x;
     }
@@ -91,15 +86,13 @@ abstract class AbstractPoint extends AbstractGeometry
      * @return self
      * @throws InvalidValueException
      */
-    public function setY($y)
+    public function setY(mixed $y): static
     {
         $parser = new Parser($y);
 
         try {
             $this->y = (float) $parser->parse();
-        } catch (RangeException $e) {
-            throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
-        } catch (UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
@@ -109,18 +102,18 @@ abstract class AbstractPoint extends AbstractGeometry
     /**
      * @return float
      */
-    public function getY()
+    public function getY(): float
     {
         return $this->y;
     }
-
 
     /**
      * @param mixed $latitude
      *
      * @return self
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    public function setLatitude($latitude)
+    public function setLatitude(mixed $latitude): AbstractPoint|static
     {
         return $this->setY($latitude);
     }
@@ -128,7 +121,7 @@ abstract class AbstractPoint extends AbstractGeometry
     /**
      * @return float
      */
-    public function getLatitude()
+    public function getLatitude(): float
     {
         return $this->getY();
     }
@@ -137,51 +130,40 @@ abstract class AbstractPoint extends AbstractGeometry
      * @param mixed $longitude
      *
      * @return self
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    public function setLongitude($longitude)
+    public function setLongitude(mixed $longitude): AbstractPoint|static
     {
         return $this->setX($longitude);
     }
 
-    /**
-     * @return float
-     */
-    public function getLongitude()
+    public function getLongitude(): float
     {
         return $this->getX();
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return self::POINT;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return array($this->x, $this->y);
     }
 
     /**
-     * @param array $argv
-     *
-     * @return array
      * @throws InvalidValueException
      */
-    protected function validateArguments(array $argv = null)
+    protected function validateArguments(array $argv = null): ?array
     {
         $argc = count($argv);
 
-        if (1 == $argc && is_array($argv[0])) {
+        if (1 === $argc && is_array($argv[0])) {
             return $argv[0];
         }
 
-        if (2 == $argc) {
+        if (2 === $argc) {
             if (is_array($argv[0]) && (is_numeric($argv[1]) || is_null($argv[1]) || is_string($argv[1]))) {
                 $argv[0][] = $argv[1];
 
@@ -193,13 +175,15 @@ abstract class AbstractPoint extends AbstractGeometry
             }
         }
 
-        if (3 == $argc) {
-            if ((is_numeric($argv[0]) || is_string($argv[0])) && (is_numeric($argv[1]) || is_string($argv[1])) && (is_numeric($argv[2]) || is_null($argv[2]) || is_string($argv[2]))) {
-                return $argv;
-            }
+        if ((3 === $argc) &&
+            (is_numeric($argv[0]) || is_string($argv[0])) &&
+            (is_numeric($argv[1]) || is_string($argv[1])) &&
+            (is_numeric($argv[2]) || is_null($argv[2]) || is_string($argv[2]))
+        ) {
+            return $argv;
         }
 
-        array_walk($argv, function (&$value) {
+        array_walk($argv, static function (&$value) {
             if (is_array($value)) {
                 $value = 'Array';
             } else {
@@ -211,11 +195,13 @@ abstract class AbstractPoint extends AbstractGeometry
     }
 
     /**
-     * @param int      $x
-     * @param int      $y
-     * @param null|int $srid
+     * @param int $x
+     * @param int $y
+     * @param int|null $srid
+     *
+     * @throws \CrEOF\Spatial\Exception\InvalidValueException
      */
-    protected function construct($x, $y, $srid = null)
+    protected function construct(int $x, int $y, ?int $srid = null): void
     {
         $this->setX($x)
             ->setY($y)

@@ -31,17 +31,14 @@ namespace CrEOF\Spatial\PHP\Types\Geometry;
  */
 interface GeometryInterface
 {
-    const GEOMETRY           = 'Geometry';
-    const POINT              = 'Point';
-    const LINESTRING         = 'LineString';
-    const POLYGON            = 'Polygon';
-    const MULTIPOINT         = 'MultiPoint';
-    const MULTILINESTRING    = 'MultiLineString';
-    const MULTIPOLYGON       = 'MultiPolygon';
-    const GEOMETRYCOLLECTION = 'GeometryCollection';
+    public const GEOMETRY           = 'Geometry';
+    public const POINT              = 'Point';
+    public const LINESTRING         = 'LineString';
+    public const POLYGON            = 'Polygon';
+    public const MULTIPOINT         = 'MultiPoint';
+    public const MULTILINESTRING    = 'MultiLineString';
+    public const MULTIPOLYGON       = 'MultiPolygon';
+    public const GEOMETRYCOLLECTION = 'GeometryCollection';
 
-    /**
-     * @return string
-     */
-    public function getType();
+    public function getType(): string;
 }

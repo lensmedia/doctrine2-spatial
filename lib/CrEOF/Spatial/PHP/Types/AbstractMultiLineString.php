@@ -34,13 +34,13 @@ abstract class AbstractMultiLineString extends AbstractGeometry
     /**
      * @var array[] $lineStrings
      */
-    protected $lineStrings = array();
+    protected array $lineStrings = array();
 
     /**
      * @param AbstractLineString[]|array[] $rings
-     * @param null|int                     $srid
+     * @param int|null $srid
      */
-    public function __construct(array $rings, $srid = null)
+    public function __construct(array $rings, ?int $srid = null)
     {
         $this->setLineStrings($rings)
             ->setSrid($srid);
@@ -51,7 +51,7 @@ abstract class AbstractMultiLineString extends AbstractGeometry
      *
      * @return self
      */
-    public function addLineString($lineString)
+    public function addLineString(AbstractLineString|array $lineString): static
     {
         $this->lineStrings[] = $this->validateLineStringValue($lineString);
 
@@ -61,11 +61,11 @@ abstract class AbstractMultiLineString extends AbstractGeometry
     /**
      * @return AbstractLineString[]
      */
-    public function getLineStrings()
+    public function getLineStrings(): array
     {
         $lineStrings = array();
 
-        for ($i = 0; $i < count($this->lineStrings); $i++) {
+        for ($i = 0, $iMax = count($this->lineStrings); $i < $iMax; $i++) {
             $lineStrings[] = $this->getLineString($i);
         }
 
@@ -77,9 +77,9 @@ abstract class AbstractMultiLineString extends AbstractGeometry
      *
      * @return AbstractLineString
      */
-    public function getLineString($index)
+    public function getLineString(int $index): AbstractLineString
     {
-        if ($index == -1) {
+        if ($index === -1) {
             $index = count($this->lineStrings) - 1;
         }
 
@@ -93,7 +93,7 @@ abstract class AbstractMultiLineString extends AbstractGeometry
      *
      * @return self
      */
-    public function setLineStrings(array $lineStrings)
+    public function setLineStrings(array $lineStrings): static
     {
         $this->lineStrings = $this->validateMultiLineStringValue($lineStrings);
 
@@ -103,7 +103,7 @@ abstract class AbstractMultiLineString extends AbstractGeometry
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return self::MULTILINESTRING;
     }
@@ -111,7 +111,7 @@ abstract class AbstractMultiLineString extends AbstractGeometry
     /**
      * @return array[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->lineStrings;
     }

@@ -36,25 +36,25 @@ abstract class AbstractMultiPoint extends AbstractGeometry
     /**
      * @var array[] $points
      */
-    protected $points = array();
+    protected array $points = array();
 
     /**
      * @param AbstractPoint[]|array[] $points
-     * @param null|int                $srid
+     * @param int|null $srid
      */
-    public function __construct(array $points, $srid = null)
+    public function __construct(array $points, ?int $srid = null)
     {
         $this->setPoints($points)
             ->setSrid($srid);
     }
 
     /**
-     * @param AbstractPoint|array $point
+     * @param array|AbstractPoint $point
      *
      * @return self
      * @throws InvalidValueException
      */
-    public function addPoint($point)
+    public function addPoint(AbstractPoint|array $point): static
     {
         $this->points[] = $this->validatePointValue($point);
 
@@ -64,11 +64,11 @@ abstract class AbstractMultiPoint extends AbstractGeometry
     /**
      * @return AbstractPoint[]
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         $points = array();
 
-        for ($i = 0; $i < count($this->points); $i++) {
+        for ($i = 0, $iMax = count($this->points); $i < $iMax; $i++) {
             $points[] = $this->getPoint($i);
         }
 
@@ -80,7 +80,7 @@ abstract class AbstractMultiPoint extends AbstractGeometry
      *
      * @return self
      */
-    public function setPoints($points)
+    public function setPoints(array $points): static
     {
         $this->points = $this->validateMultiPointValue($points);
 
@@ -92,16 +92,12 @@ abstract class AbstractMultiPoint extends AbstractGeometry
      *
      * @return AbstractPoint
      */
-    public function getPoint($index)
+    public function getPoint(int $index): AbstractPoint
     {
-        switch ($index) {
-            case -1:
-                $point = $this->points[count($this->points) - 1];
-                break;
-            default:
-                $point = $this->points[$index];
-                break;
-        }
+        $point = match ($index) {
+            -1 => $this->points[count($this->points) - 1],
+            default => $this->points[$index],
+        };
 
         $pointClass = $this->getNamespace() . '\Point';
 
@@ -111,7 +107,7 @@ abstract class AbstractMultiPoint extends AbstractGeometry
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return self::MULTIPOINT;
     }
@@ -119,7 +115,7 @@ abstract class AbstractMultiPoint extends AbstractGeometry
     /**
      * @return array[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->points;
     }

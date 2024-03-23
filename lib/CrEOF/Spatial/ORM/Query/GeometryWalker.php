@@ -60,7 +60,7 @@ class GeometryWalker extends SqlWalker
      *
      * @return string The SQL.
      */
-    public function walkSelectExpression($selectExpression)
+    public function walkSelectExpression(SelectExpression $selectExpression): string
     {
         $expr = $selectExpression->expression;
         $sql  = parent::walkSelectExpression($selectExpression);
